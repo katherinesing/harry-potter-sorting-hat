@@ -210,6 +210,15 @@
     }
   };
 
+  const THINKING_PHRASES = [
+    "Hmm, difficult. Very difficult.",
+    "Plenty of courage, I see...",
+    "Not a bad mind, either...",
+    "There's talent, oh my, yes...",
+    "And a nice thirst to prove yourself...",
+    "So, where shall I put you?"
+  ];
+
   const screens = {
     intro: document.getElementById('screen-intro'),
     thinking: document.getElementById('screen-thinking'),
@@ -223,11 +232,57 @@
 
   document.getElementById('btn-proceed').addEventListener('click', () => {
     showScreen('thinking');
+    runThinkingSequence();
   });
 
   document.getElementById('btn-again').addEventListener('click', () => {
     showScreen('thinking');
+    runThinkingSequence();
   });
+
+  function runThinkingSequence() {
+    const textEl = document.getElementById('thinking-text');
+    let i = 0;
+    textEl.textContent = THINKING_PHRASES[0];
+    textEl.style.opacity = 1;
+
+    const interval = setInterval(() => {
+      i++;
+      if (i >= THINKING_PHRASES.length) {
+        clearInterval(interval);
+        setTimeout(revealResult, 900);
+        return;
+      }
+      textEl.style.opacity = 0;
+      setTimeout(() => {
+        textEl.textContent = THINKING_PHRASES[i];
+        textEl.style.opacity = 1;
+      }, 350);
+    }, 1000);
+  }
+
+  function revealResult() {
+    const keys = Object.keys(HOUSES);
+    const chosen = HOUSES[keys[Math.floor(Math.random() * keys.length)]];
+
+    const badgeEl = document.getElementById('house-badge');
+    const houseEl = document.getElementById('result-house');
+    const traitsEl = document.getElementById('result-traits');
+    const descEl = document.getElementById('result-desc');
+
+    badgeEl.textContent = chosen.badge;
+    houseEl.textContent = chosen.name.toUpperCase();
+    houseEl.style.color = chosen.color === "#0e1a40" ? "#5b7fd6" : chosen.color;
+    traitsEl.textContent = chosen.traits;
+    descEl.textContent = chosen.desc;
+
+    // restart badge reveal animation
+    badgeEl.style.animation = 'none';
+    void badgeEl.offsetWidth;
+    badgeEl.style.animation = null;
+
+    showScreen('result');
+  }
 </script>
 
 </body>
