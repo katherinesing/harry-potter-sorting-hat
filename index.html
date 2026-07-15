@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Sorting Hat</title>
+<style>
+  :root {
+    --parchment: #f4e9d8;
+    --ink: #2b1d0e;
+    --gold: #c9a227;
+    --bg-dark: #0b0b12;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Georgia', 'Palatino Linotype', serif;
+    background: radial-gradient(ellipse at top, #1a1530 0%, #0b0b12 60%, #050508 100%);
+    color: var(--parchment);
+    padding: 24px;
+    overflow-x: hidden;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 560px;
+    background: linear-gradient(180deg, rgba(30, 22, 48, 0.85), rgba(15, 12, 24, 0.9));
+    border: 1px solid rgba(201, 162, 39, 0.4);
+    border-radius: 18px;
+    padding: 48px 36px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(201,162,39,0.06) inset;
+  }
+
+  h1 {
+    font-size: 1.9rem;
+    letter-spacing: 0.06em;
+    margin: 0 0 8px;
+    color: var(--gold);
+    text-shadow: 0 0 18px rgba(201,162,39,0.35);
+  }
+
+  .subtitle {
+    font-size: 0.95rem;
+    opacity: 0.75;
+    margin-bottom: 32px;
+    font-style: italic;
+  }
+
+  .hat {
+    font-size: 5rem;
+    margin: 12px 0 28px;
+    display: inline-block;
+    filter: drop-shadow(0 8px 16px rgba(0,0,0,0.5));
+  }
+
+  .hat.bounce { animation: bounce 1.1s ease-in-out infinite; }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-10px) rotate(2deg); }
+  }
+
+  p.question {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 32px;
+  }
+
+  button {
+    font-family: inherit;
+    font-size: 1.05rem;
+    padding: 14px 36px;
+    border-radius: 999px;
+    border: 1px solid var(--gold);
+    background: transparent;
+    color: var(--gold);
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: all 0.25s ease;
+  }
+
+  button:hover {
+    background: var(--gold);
+    color: var(--bg-dark);
+    box-shadow: 0 0 24px rgba(201,162,39,0.5);
+  }
+
+  .thinking-text {
+    min-height: 60px;
+    font-size: 1.15rem;
+    font-style: italic;
+    opacity: 0.9;
+    transition: opacity 0.4s ease;
+  }
+
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  .result-house {
+    font-size: 2.4rem;
+    margin: 4px 0 4px;
+    letter-spacing: 0.04em;
+    text-shadow: 0 0 24px currentColor;
+  }
+
+  .result-traits {
+    font-size: 0.95rem;
+    opacity: 0.85;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+
+  .result-desc {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    margin-bottom: 32px;
+    text-align: left;
+  }
+
+  .house-badge {
+    font-size: 4rem;
+    margin-bottom: 12px;
+    display: inline-block;
+    animation: reveal 0.7s ease;
+  }
+
+  @keyframes reveal {
+    from { transform: scale(0.4) rotate(-15deg); opacity: 0; }
+    to { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+
+  .fade-in { animation: fadeIn 0.6s ease; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+  <div class="card">
+
+    <!-- Screen 1: Intro -->
+    <div id="screen-intro" class="screen active">
+      <h1>The Sorting Hat</h1>
+      <div class="subtitle">Hogwarts School of Witchcraft and Wizardry</div>
+      <div class="hat">🎩</div>
+      <p class="question">
+        A worn, patched, and frayed wizard's hat sits before you.<br>
+        Do you dare put it on and learn your true house?
+      </p>
+      <button id="btn-proceed">Proceed</button>
+    </div>
+
+    <!-- Screen 2: Thinking -->
+    <div id="screen-thinking" class="screen">
+      <h1>The Sorting Hat</h1>
+      <div class="hat bounce">🎩</div>
+      <div id="thinking-text" class="thinking-text">Hmm, let me see...</div>
+    </div>
+
+    <!-- Screen 3: Result -->
+    <div id="screen-result" class="screen">
+      <div id="house-badge" class="house-badge">🦁</div>
+      <div id="result-house" class="result-house">GRYFFINDOR</div>
+      <div id="result-traits" class="result-traits"></div>
+      <p id="result-desc" class="result-desc"></p>
+      <button id="btn-again">Sort Me Again</button>
+    </div>
+
+  </div>
+
+<script>
+  const HOUSES = {
+    gryffindor: {
+      name: "Gryffindor",
+      badge: "🦁",
+      color: "#ae0001",
+      traits: "Courage · Bravery · Nerve · Chivalry",
+      desc: "The Sorting Hat has spoken: GRYFFINDOR! You belong among those who dare — where courage runs bravest and hearts beat truest. Founded by Godric Gryffindor, this house has produced daring adventurers and fierce defenders of what's right. Your colors are scarlet and gold, and the lion is your emblem. Wear it well."
+    },
+    hufflepuff: {
+      name: "Hufflepuff",
+      badge: "🦡",
+      color: "#ecb939",
+      traits: "Loyalty · Patience · Hard Work · Fair Play",
+      desc: "The Sorting Hat has spoken: HUFFLEPUFF! Yours is a spirit that values loyalty above glory, and steady effort above flash. Founded by Helga Hufflepuff, this house welcomes the true-hearted and the tireless. Your colors are yellow and black, and the badger stands as your emblem. Few will ever have a truer friend."
+    },
+    ravenclaw: {
+      name: "Ravenclaw",
+      badge: "🦅",
+      color: "#0e1a40",
+      traits: "Wit · Wisdom · Learning · Creativity",
+      desc: "The Sorting Hat has spoken: RAVENCLAW! A mind like yours craves knowledge and delights in a well-turned riddle. Founded by Rowena Ravenclaw, this house treasures wit and wisdom above all else. Your colors are blue and bronze, and the eagle is your emblem. Your intellect will take you far."
+    },
+    slytherin: {
+      name: "Slytherin",
+      badge: "🐍",
+      color: "#1a472a",
+      traits: "Ambition · Cunning · Resourcefulness · Leadership",
+      desc: "The Sorting Hat has spoken: SLYTHERIN! You possess the ambition and cunning to achieve great things, by whatever means necessary. Founded by Salazar Slytherin, this house has forged many of the greatest witches and wizards in history. Your colors are green and silver, and the serpent is your emblem. Greatness awaits those who reach for it."
+    }
+  };
+
+  const THINKING_PHRASES = [
+    "Hmm, difficult. Very difficult.",
+    "Plenty of courage, I see...",
+    "Not a bad mind, either...",
+    "There's talent, oh my, yes...",
+    "And a nice thirst to prove yourself...",
+    "So, where shall I put you?"
+  ];
+
+  const screens = {
+    intro: document.getElementById('screen-intro'),
+    thinking: document.getElementById('screen-thinking'),
+    result: document.getElementById('screen-result')
+  };
+
+  function showScreen(name) {
+    Object.values(screens).forEach(s => s.classList.remove('active'));
+    screens[name].classList.add('active');
+  }
+
+  document.getElementById('btn-proceed').addEventListener('click', () => {
+    showScreen('thinking');
+    runThinkingSequence();
+  });
+
+  document.getElementById('btn-again').addEventListener('click', () => {
+    showScreen('thinking');
+    runThinkingSequence();
+  });
+
+  function runThinkingSequence() {
+    const textEl = document.getElementById('thinking-text');
+    let i = 0;
+    textEl.textContent = THINKING_PHRASES[0];
+    textEl.style.opacity = 1;
+
+    const interval = setInterval(() => {
+      i++;
+      if (i >= THINKING_PHRASES.length) {
+        clearInterval(interval);
+        setTimeout(revealResult, 900);
+        return;
+      }
+      textEl.style.opacity = 0;
+      setTimeout(() => {
+        textEl.textContent = THINKING_PHRASES[i];
+        textEl.style.opacity = 1;
+      }, 350);
+    }, 1000);
+  }
+
+  function revealResult() {
+    const keys = Object.keys(HOUSES);
+    const chosen = HOUSES[keys[Math.floor(Math.random() * keys.length)]];
+
+    const badgeEl = document.getElementById('house-badge');
+    const houseEl = document.getElementById('result-house');
+    const traitsEl = document.getElementById('result-traits');
+    const descEl = document.getElementById('result-desc');
+
+    badgeEl.textContent = chosen.badge;
+    houseEl.textContent = chosen.name.toUpperCase();
+    houseEl.style.color = chosen.color === "#0e1a40" ? "#5b7fd6" : chosen.color;
+    traitsEl.textContent = chosen.traits;
+    descEl.textContent = chosen.desc;
+
+    // restart badge reveal animation
+    badgeEl.style.animation = 'none';
+    void badgeEl.offsetWidth;
+    badgeEl.style.animation = null;
+
+    showScreen('result');
+  }
+</script>
+
+</body>
+</html>
