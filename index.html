@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Sorting Hat</title>
+</head>
+<body>
+
+  <div class="card">
+
+    <!-- Screen 1: Intro -->
+    <div id="screen-intro" class="screen active">
+      <h1>The Sorting Hat</h1>
+      <div class="subtitle">Hogwarts School of Witchcraft and Wizardry</div>
+      <div class="hat">🎩</div>
+      <p class="question">
+        A worn, patched, and frayed wizard's hat sits before you.<br>
+        Do you dare put it on and learn your true house?
+      </p>
+      <button id="btn-proceed">Proceed</button>
+    </div>
+
+    <!-- Screen 2: Thinking -->
+    <div id="screen-thinking" class="screen">
+      <h1>The Sorting Hat</h1>
+      <div class="hat bounce">🎩</div>
+      <div id="thinking-text" class="thinking-text">Hmm, let me see...</div>
+    </div>
+
+    <!-- Screen 3: Result -->
+    <div id="screen-result" class="screen">
+      <div id="house-badge" class="house-badge">🦁</div>
+      <div id="result-house" class="result-house">GRYFFINDOR</div>
+      <div id="result-traits" class="result-traits"></div>
+      <p id="result-desc" class="result-desc"></p>
+      <button id="btn-again">Sort Me Again</button>
+    </div>
+
+  </div>
+
+</body>
+</html>
