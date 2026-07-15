@@ -178,5 +178,57 @@
 
   </div>
 
+<script>
+  const HOUSES = {
+    gryffindor: {
+      name: "Gryffindor",
+      badge: "🦁",
+      color: "#ae0001",
+      traits: "Courage · Bravery · Nerve · Chivalry",
+      desc: "The Sorting Hat has spoken: GRYFFINDOR! You belong among those who dare — where courage runs bravest and hearts beat truest. Founded by Godric Gryffindor, this house has produced daring adventurers and fierce defenders of what's right. Your colors are scarlet and gold, and the lion is your emblem. Wear it well."
+    },
+    hufflepuff: {
+      name: "Hufflepuff",
+      badge: "🦡",
+      color: "#ecb939",
+      traits: "Loyalty · Patience · Hard Work · Fair Play",
+      desc: "The Sorting Hat has spoken: HUFFLEPUFF! Yours is a spirit that values loyalty above glory, and steady effort above flash. Founded by Helga Hufflepuff, this house welcomes the true-hearted and the tireless. Your colors are yellow and black, and the badger stands as your emblem. Few will ever have a truer friend."
+    },
+    ravenclaw: {
+      name: "Ravenclaw",
+      badge: "🦅",
+      color: "#0e1a40",
+      traits: "Wit · Wisdom · Learning · Creativity",
+      desc: "The Sorting Hat has spoken: RAVENCLAW! A mind like yours craves knowledge and delights in a well-turned riddle. Founded by Rowena Ravenclaw, this house treasures wit and wisdom above all else. Your colors are blue and bronze, and the eagle is your emblem. Your intellect will take you far."
+    },
+    slytherin: {
+      name: "Slytherin",
+      badge: "🐍",
+      color: "#1a472a",
+      traits: "Ambition · Cunning · Resourcefulness · Leadership",
+      desc: "The Sorting Hat has spoken: SLYTHERIN! You possess the ambition and cunning to achieve great things, by whatever means necessary. Founded by Salazar Slytherin, this house has forged many of the greatest witches and wizards in history. Your colors are green and silver, and the serpent is your emblem. Greatness awaits those who reach for it."
+    }
+  };
+
+  const screens = {
+    intro: document.getElementById('screen-intro'),
+    thinking: document.getElementById('screen-thinking'),
+    result: document.getElementById('screen-result')
+  };
+
+  function showScreen(name) {
+    Object.values(screens).forEach(s => s.classList.remove('active'));
+    screens[name].classList.add('active');
+  }
+
+  document.getElementById('btn-proceed').addEventListener('click', () => {
+    showScreen('thinking');
+  });
+
+  document.getElementById('btn-again').addEventListener('click', () => {
+    showScreen('thinking');
+  });
+</script>
+
 </body>
 </html>
